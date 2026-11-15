@@ -1,30 +1,30 @@
-// Nạp React để viết component giao diện bằng JSX.
 import React from 'react';
-// Link điều hướng không tải lại trang; NavLink còn nhận biết liên kết đang hoạt động.
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+// Import hook kết nối ví của B
+import { useWallet } from '../web3/hooks/useWallet';
 
-// Khai báo và xuất component thanh điều hướng để các trang khác sử dụng.
 export default function Navbar() {
-  // Trả về toàn bộ nội dung và cấu trúc của thanh điều hướng.
+  // Lấy hàm connect và thông tin ví từ hook
+  const { connect, account, isConnected } = useWallet();
+
   return (
-    // Thẻ nav bao quanh các liên kết điều hướng chính của website.
-    <nav className="site-nav">
-      {/* Logo thương hiệu; nhấn vào sẽ quay về trang chủ. */}
-      <Link className="brand" to="/" aria-label="Minh Bạch, trang chủ">
-        {/* Chữ cái tạo biểu tượng logo; ẩn biểu tượng này khỏi trình đọc màn hình. */}
-        <span className="brand-mark" aria-hidden="true">m</span>
-        {/* Tên thương hiệu hiển thị cạnh biểu tượng logo. */}
-        <span>minh bạch</span>
-      </Link>
-      {/* Nhóm các liên kết chuyển đổi giữa những trang chính. */}
-      <div className="nav-links">
-        {/* Liên kết trang chủ; thuộc tính end chỉ đánh dấu active khi URL đúng là /. */}
-        <NavLink to="/" end>Trang chủ</NavLink>
-        {/* Liên kết tới trang liệt kê các chiến dịch. */}
-        <NavLink to="/campaigns">Chiến dịch</NavLink>
+    <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#fff', borderBottom: '1px solid #ccc' }}>
+      <div style={{ display: 'flex', gap: '20px' }}>
+        <Link to="/" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>Trang Chủ</Link>
+        <Link to="/campaigns" style={{ textDecoration: 'none', color: '#333', fontWeight: 'bold' }}>Chiến dịch</Link>
       </div>
-      {/* Nút kêu gọi hành động, đưa người dùng tới danh sách chiến dịch. */}
-      <a className="nav-action" href="/campaigns">Ủng hộ ngay <span aria-hidden="true">↗</span></a>
+      
+      {/* Nút gọi MetaMask */}
+      <button 
+        onClick={connect} 
+        style={{ 
+          padding: '10px 16px', cursor: 'pointer', border: 'none', borderRadius: '4px', fontWeight: 'bold',
+          background: isConnected ? '#4CAF50' : '#2196F3', 
+          color: 'white' 
+        }}
+      >
+        {isConnected ? `Đã kết nối: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Kết nối Ví MetaMask'}
+      </button>
     </nav>
   );
 }
