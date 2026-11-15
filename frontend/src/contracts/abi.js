@@ -2,4 +2,8 @@
 export const CROWDFUNDING_ABI = [
   "function getCampaignCount() view returns (uint256)",
   "function getCampaign(uint256 id) view returns (address owner, string title, uint256 goal, uint256 amountRaised, uint256 deadline, bool withdrawn)",
+  "function donate(uint256 id) payable",
+  "function withdraw(uint256 id)",
+  "function refund(uint256 id)",
+  "event DonationReceived(uint256 indexed id, address indexed donor, uint256 amount)",
 ];
