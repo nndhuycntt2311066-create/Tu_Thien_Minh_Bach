@@ -60,3 +60,16 @@ export function withdrawTx(signer, campaignId, onStatus) {
 export function refundTx(signer, campaignId, onStatus) {
   return runTx(signer, (contract) => contract.refund(campaignId), onStatus);
 }
+
+export function createCampaignTx(signer, { title, description, imageURI, goalEth, days }, onStatus) {
+  return runTx(signer, async (contract) => {
+    if (!title?.trim()) throw new Error("Vui lòng nhập tiêu đề.");
+    if (!goalEth || Number(goalEth) <= 0) throw new Error("Mục tiêu phải lớn hơn 0.");
+    if (!days || Number(days) <= 0) throw new Error("Số ngày phải lớn hơn 0.");
+    return contract.createCampaign(
+      title, description ?? "", imageURI ?? "",
+      parseEther(String(goalEth)),   // ETH -> wei
+      BigInt(days)
+    );
+  }, onStatus);
+}
