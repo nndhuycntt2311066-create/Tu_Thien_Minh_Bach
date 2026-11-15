@@ -17,7 +17,7 @@
   }
 }
 
-.hero {
+.vite-hero-starter {
   position: relative;
 
   .base,
@@ -181,4 +181,197 @@
     right: 0;
     border-right-color: var(--border);
   }
+}
+
+:root {
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  color: #242a24;
+  background: #f6f5f0;
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  min-width: 320px;
+  margin: 0;
+  background: #f6f5f0;
+}
+
+#root {
+  width: 100%;
+  max-width: none;
+  min-height: 100vh;
+  margin: 0;
+  border: 0;
+  text-align: left;
+}
+
+.site-nav,
+.page-shell {
+  width: min(1120px, calc(100% - 64px));
+  margin-inline: auto;
+}
+
+.site-nav {
+  min-height: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #d9dcd4;
+  gap: 24px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #263d31;
+  font-size: 19px;
+  font-weight: 700;
+  text-decoration: none;
+  letter-spacing: 0;
+}
+
+.brand-mark {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #d3e2be;
+  color: #315940;
+  font-family: Georgia, serif;
+  font-size: 22px;
+}
+
+.nav-links { display: flex; align-items: center; gap: 34px; }
+.nav-links a,
+.nav-action { color: #62685f; font-size: 14px; text-decoration: none; }
+.nav-links a.active { color: #315940; font-weight: 700; }
+.nav-action { color: #315940; font-weight: 700; }
+.nav-action span { margin-left: 7px; }
+
+.hero {
+  min-height: 472px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(260px, .75fr);
+  align-items: center;
+  gap: 70px;
+  padding: 72px 5.5%;
+  margin-top: 30px;
+  background: #e8eee1;
+  overflow: hidden;
+  position: relative;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border: 1px solid rgba(75, 110, 75, .16);
+  border-radius: 50%;
+  right: -170px;
+  top: -190px;
+  box-shadow: 0 0 0 34px rgba(75, 110, 75, .035), 0 0 0 68px rgba(75, 110, 75, .025);
+  pointer-events: none;
+}
+
+.hero-copy { position: relative; z-index: 1; }
+.eyebrow { margin: 0 0 16px; color: #53724f; font-size: 11px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase; }
+.hero h1,
+.campaign-intro h1 {
+  margin: 0;
+  color: #263d31;
+  font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-size: clamp(42px, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.hero h1 span,
+.campaign-intro h1 span { color: #738660; font-style: italic; }
+.hero-description { max-width: 480px; margin: 20px 0 28px; color: #656d62; font-size: 15px; line-height: 1.7; }
+.button { min-height: 47px; display: inline-flex; align-items: center; gap: 22px; padding: 0 19px; text-decoration: none; font-size: 13px; font-weight: 700; }
+.button-primary { background: #315940; color: #fff; }
+.button-primary:hover { background: #244631; }
+
+.hero-note { position: relative; z-index: 1; padding: 28px 30px; background: #fffdf7; border: 1px solid rgba(49, 89, 64, .12); }
+.note-mark { display: block; color: #b7784a; font-size: 25px; }
+.note-label,.note-caption { color: #70766c; font-size: 12px; line-height: 1.55; }
+.note-label { margin: 16px 0 7px; }
+.note-total { margin: 0; color: #315940; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 42px; line-height: 1.1; }
+.note-total span { font-family: 'Trebuchet MS', sans-serif; font-size: 13px; font-weight: 700; }
+.note-caption { margin: 9px 0 0; }
+.note-rule { height: 1px; margin-top: 22px; background: #e5e6de; }
+
+.campaign-section { padding: 64px 0 74px; }
+.section-heading { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 23px; }
+.section-heading .eyebrow { margin-bottom: 8px; }
+.section-heading h2 { margin: 0; color: #263d31; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 31px; font-weight: 400; line-height: 1.2; letter-spacing: 0; }
+.text-link { color: #315940; font-size: 13px; font-weight: 700; text-decoration: none; }
+.text-link span { padding-left: 8px; }
+.campaign-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
+.campaign-card { min-width: 0; background: #fff; border: 1px solid #e4e5de; }
+.campaign-art { height: 180px; padding: 17px 20px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+.campaign-art-1 { background: #d9e3ce; color: #315940; }
+.campaign-art-0 { background: #ead9c8; color: #77543d; }
+.campaign-art::after { content: ''; position: absolute; width: 190px; height: 190px; border: 1px solid currentColor; border-radius: 50%; right: 8%; top: 16px; opacity: .16; box-shadow: 0 0 0 16px rgba(255,255,255,.13), 0 0 0 34px rgba(255,255,255,.1); }
+.art-index,.art-caption { position: relative; z-index: 1; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+.art-symbol { position: absolute; right: 17%; top: 40px; font-family: Georgia, serif; font-size: 94px; line-height: 1; opacity: .78; }
+.art-caption { line-height: 1.45; }
+.campaign-content { padding: 19px 21px 20px; }
+.campaign-meta,.funding-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.status { padding: 5px 8px; font-size: 10px; font-weight: 700; }
+.status-active { background: #edf3e6; color: #446444; }
+.status-complete { background: #f3ece4; color: #65482f; }
+.campaign-deadline { color: #888d84; font-size: 11px; }
+.campaign-content h3 { margin: 15px 0 7px; color: #283a2e; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 22px; font-weight: 400; line-height: 1.25; }
+.campaign-description { min-height: 42px; color: #71766e; font-size: 12px; line-height: 1.6; }
+.progress-track { appearance: none; width: 100%; height: 5px; margin: 19px 0 10px; border: 0; background: #e9ece5; }
+.progress-track::-webkit-progress-bar { background: #e9ece5; }
+.progress-track::-webkit-progress-value { background: #709267; }
+.progress-track::-moz-progress-bar { background: #709267; }
+.funding-row { color: #777d73; font-size: 10px; }
+.funding-row strong { color: #344f38; font-size: 12px; }
+.campaign-link { display: flex; justify-content: space-between; margin-top: 17px; padding-top: 13px; border-top: 1px solid #eceee8; color: #315940; font-size: 12px; font-weight: 700; text-decoration: none; }
+.campaign-page { min-height: calc(100vh - 82px); display: flex; flex-direction: column; }
+.campaign-intro { padding: 64px 0 24px; }
+.campaign-intro h1 { font-size: 50px; }
+.campaign-intro .hero-description { margin-bottom: 0; }
+.campaign-page .campaign-section { padding-top: 25px; flex: 1; }
+.result-count { display: inline-grid; min-width: 25px; height: 25px; place-items: center; margin-left: 7px; border-radius: 50%; background: #e4eadc; color: #395b35; font-family: 'Segoe UI', Tahoma, Arial, sans-serif; font-size: 11px; vertical-align: 5px; }
+.site-footer { min-height: 66px; display: flex; justify-content: space-between; align-items: center; gap: 18px; border-top: 1px solid #d9dcd4; color: #7a8077; font-size: 11px; }
+.site-footer span:first-child { color: #315940; font-weight: 700; }
+
+@media (max-width: 720px) {
+  .site-nav,.page-shell { width: min(100% - 36px, 560px); }
+  .site-nav { min-height: 68px; gap: 10px; }
+  .brand { gap: 7px; font-size: 16px; }
+  .nav-links { gap: 14px; }
+  .nav-links a,.nav-action { font-size: 11px; }
+  .nav-action { display: none; }
+  .hero { min-height: auto; grid-template-columns: 1fr; gap: 28px; padding: 42px 25px; margin-top: 18px; }
+  .hero h1,.campaign-intro h1 { font-size: 43px; }
+  .hero-note { max-width: 360px; }
+  .campaign-section { padding: 46px 0 54px; }
+  .section-heading h2 { font-size: 26px; }
+  .campaign-grid { grid-template-columns: 1fr; gap: 16px; }
+  .campaign-art { height: 160px; }
+  .campaign-intro { padding: 45px 0 18px; }
+}
+
+@media (max-width: 380px) {
+  .site-nav,.page-shell { width: calc(100% - 28px); }
+  .nav-links { gap: 9px; }
+  .nav-links a { font-size: 10px; }
+  .hero h1,.campaign-intro h1 { font-size: 38px; }
+  .campaign-meta { align-items: flex-start; }
+  .campaign-deadline { text-align: right; }
+  .funding-row { align-items: flex-start; }
 }
