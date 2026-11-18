@@ -9,7 +9,7 @@ import { useCampaigns } from './web3/hooks/useCampaigns';
 
 // Component hiển thị danh sách chiến dịch
 const Campaigns = () => {
-  const { campaigns, isLoading, error } = useCampaigns();
+  const { campaigns, isLoading, error, reload } = useCampaigns();
 
   if (isLoading) return <p style={{ padding: '20px' }}>Đang tải dữ liệu từ Blockchain...</p>;
   if (error) return <p style={{ padding: '20px', color: 'red' }}>Lỗi: {error}</p>;
@@ -19,7 +19,7 @@ const Campaigns = () => {
       <h1>Tất cả chiến dịch</h1>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
         {campaigns.map((campaign, index) => (
-          <CampaignCard key={campaign.id ?? index} campaign={campaign} />
+        <CampaignCard key={campaign.id ?? index} campaign={campaign} onChanged={() => reload(true)} />
         ))}
       </div>
     </div>
