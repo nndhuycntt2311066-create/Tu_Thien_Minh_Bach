@@ -1,4 +1,4 @@
-import { Contract, JsonRpcProvider, ZeroAddress, formatEther } from "ethers";
+import { Contract, JsonRpcProvider, formatEther } from "ethers";
 import { CONTRACT_ADDRESS } from "../contracts/config";
 import { CROWDFUNDING_ABI } from "../contracts/abi";
 
@@ -10,7 +10,12 @@ const toDateString = (ms) => new Date(ms).toISOString().slice(0, 10);
 
 // Gom dữ liệu về ĐÚNG dạng mà CampaignCard của C đang dùng
 function buildCampaign({ id, owner, title, description, imageURI, goal, raised, deadlineMs, withdrawn }) {
-  const active = deadlineMs > Date.now() && Number(raised) < Number(goal) && !withdrawn;
+  // Các cờ trạng thái này khớp với require trong Crowdfunding.sol
+  const isEnded = deadlineMs <= Date.now();               // đã qua hạn chót
+  const isGoalReached = Number(raised) >= Number(goal);   // đã đạt (hoặc vượt) mục tiêu
+  const canWithdraw = isGoalReached && !withdrawn;        // chủ chiến dịch được rút (withdraw)
+  const canRefund = isEnded && !isGoalReached;            // người đã góp được hoàn tiền (refund)
+  const active = !isEnded && !isGoalReached && !withdrawn; // nhãn "Đang gây quỹ" của C
   return {
     id,
     owner,
@@ -23,6 +28,10 @@ function buildCampaign({ id, owner, title, description, imageURI, goal, raised, 
     deadlineMs,
     active,                              // true = "Đang gây quỹ"
     withdrawn,
+    isEnded,
+    isGoalReached,
+    canWithdraw,                         // dùng cùng điều kiện "ví hiện tại là chủ chiến dịch"
+    canRefund,                           // dùng cùng điều kiện "tôi đã góp > 0" (useMyDonation)
   };
 }
 
@@ -50,24 +59,13 @@ function toCampaign(id, c) {
   });
 }
 
-// Dò xem ID đầu tiên là 0 hay 1 (chờ A xác nhận)
-async function getFirstId(contract) {
-  try {
-    const c = await contract.getCampaign(0);
-    if (c.owner !== ZeroAddress) return 0;
-  } catch {
-    // getCampaign(0) bị revert -> ID bắt đầu từ 1
-  }
-  return 1;
-}
-
 export async function fetchCampaigns(provider) {
   const contract = getContract(provider);
   const count = Number(await contract.getCampaignCount());
   if (count === 0) return [];
 
-  const first = await getFirstId(contract);
-  const ids = Array.from({ length: count }, (_, i) => first + i);
+  // Contract dùng mảng nên id luôn bắt đầu từ 0: 0, 1, ..., count - 1
+  const ids = Array.from({ length: count }, (_, i) => i);
   // Đọc song song cho nhanh
   const results = await Promise.all(ids.map((id) => contract.getCampaign(id)));
   return results.map((c, i) => toCampaign(ids[i], c));

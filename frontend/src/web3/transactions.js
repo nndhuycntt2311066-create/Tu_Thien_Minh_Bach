@@ -65,7 +65,8 @@ export function createCampaignTx(signer, { title, description, imageURI, goalEth
   return runTx(signer, async (contract) => {
     if (!title?.trim()) throw new Error("Vui lòng nhập tiêu đề.");
     if (!goalEth || Number(goalEth) <= 0) throw new Error("Mục tiêu phải lớn hơn 0.");
-    if (!days || Number(days) <= 0) throw new Error("Số ngày phải lớn hơn 0.");
+if (!Number.isInteger(Number(days)) || Number(days) <= 0)
+  throw new Error("Số ngày phải là số nguyên lớn hơn 0.");
     return contract.createCampaign(
       title, description ?? "", imageURI ?? "",
       parseEther(String(goalEth)),   // ETH -> wei

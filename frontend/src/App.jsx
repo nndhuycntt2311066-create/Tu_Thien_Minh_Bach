@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Link } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import CampaignCard from './components/CampaignCard';
@@ -7,8 +7,8 @@ import CreateCampaign from './components/CreateCampaign';
 import { useCampaigns } from './web3/hooks/useCampaigns';
 
 const Campaigns = () => {
-  // Lấy thêm hàm reload để tự cập nhật danh sách
   const { campaigns, isLoading, error, reload } = useCampaigns();
+  const reloadCampaigns = useCallback(() => reload(true), [reload]);
 
   // Chỉ hiện chữ đang tải ở lần đầu tiên (campaigns.length === 0)
   if (isLoading && campaigns.length === 0) {
@@ -22,8 +22,6 @@ const Campaigns = () => {
   return (
     <div style={{ padding: '20px' }}>
       <h1>Tất cả chiến dịch</h1>
-      
-      {/* Việc 5: Trạng thái rỗng khi chưa có chiến dịch nào[cite: 4] */}
       {campaigns.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#fff', borderRadius: '8px', marginTop: '20px' }}>
           <p style={{ color: '#666', marginBottom: '12px' }}>Chưa có chiến dịch nào được tạo.</p>
@@ -33,9 +31,8 @@ const Campaigns = () => {
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-          {campaigns.map((campaign) => (
-            /* Việc 1: Truyền hàm reload xuống qua prop onChanged[cite: 4] */
-            <CampaignCard key={campaign.id} campaign={campaign} onChanged={reload} />
+          {campaigns.map((campaign, index) => (
+            <CampaignCard key={campaign.id ?? index} campaign={campaign} onChanged={reloadCampaigns} />
           ))}
         </div>
       )}

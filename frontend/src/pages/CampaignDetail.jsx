@@ -35,10 +35,12 @@ export default function CampaignDetail() {
     loadDetail();
   }, [id, provider]);
 
-  useEffect(() => {
+ useEffect(() => {
     if (state === 'success') {
       setAmount('');
-      loadDetail();
+      loadDetail(); // Cập nhật ngay lập tức
+      const timer = setTimeout(() => loadDetail(), 3000); // Gọi thêm 1 lần sau 3 giây cho RPC kịp đồng bộ
+      return () => clearTimeout(timer);
     }
   }, [state]);
 

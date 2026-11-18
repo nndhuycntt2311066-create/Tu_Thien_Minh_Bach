@@ -1,49 +1,95 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useWallet } from '../web3/hooks/useWallet';
 import { useDonate } from '../web3/hooks/useDonate';
 import WithdrawRefundButtons from './WithdrawRefundButtons';
 
+function getUnavailableMessage(campaign, reached, ended) {
+  if (campaign.withdrawn) return 'Chiến dịch đã giải ngân, ngừng nhận quyên góp.';
+  if (reached) return 'Chiến dịch đã đạt mục tiêu, không nhận thêm quyên góp.';
+  if (ended) return 'Chiến dịch đã kết thúc thời hạn gây quỹ.';
+  return 'Chiến dịch chưa có mục tiêu quyên góp hợp lệ.';
+}
+
+function getTransactionMessage(state, message) {
+  if (message) return message;
+
+  const messages = {
+    confirming: 'Vui lòng xác nhận giao dịch trên MetaMask...',
+    pending: 'Giao dịch đã gửi, đang chờ xác nhận...',
+    success: 'Quyên góp thành công! Cảm ơn tấm lòng của bạn.',
+  };
+  return messages[state] || '';
+}
+
+function getCampaignStatus(campaign, reached, ended) {
+  if (campaign.withdrawn) return 'Đã giải ngân';
+  if (reached) return 'Đã đạt mục tiêu';
+  if (ended) return 'Đã kết thúc';
+  return 'Đang gây quỹ';
+}
+
+function getBadgeStyle(campaign, reached, ended) {
+  if (campaign.withdrawn) return { backgroundColor: '#f5f5f5', color: '#595959' };
+  if (reached) return { backgroundColor: '#e8f5e9', color: '#2e7d32' };
+  if (ended) return { backgroundColor: '#ffebee', color: '#c62828' };
+  return { backgroundColor: '#e3f2fd', color: '#007bff' };
+}
+
+function getTransactionColor(state) {
+  if (state === 'error') return '#ff4d4f';
+  if (state === 'rejected') return '#b26a00';
+  return '#2e7d32';
+}
+
+function getDonateButtonLabel(state, isBusy) {
+  if (state === 'pending') return 'Đang xử lý...';
+  if (isBusy) return 'Đang xác nhận...';
+  return 'Quyên góp';
+}
+
 export default function CampaignCard({ campaign, onChanged }) {
   const { signer, address } = useWallet();
-  const { donate, isBusy, message, explorerUrl, state } = useDonate(signer);
-
-  const locked = isBusy || state === 'confirming' || state === 'success';
-
+  const {
+    donate,
+    isBusy,
+    message,
+    explorerUrl,
+    state,
+    reset,
+  } = useDonate(signer);
   const [amount, setAmount] = useState('');
   const [formError, setFormError] = useState('');
 
   useEffect(() => {
-    if (state === 'success') {
-      setAmount('');
-    }
-  }, [state]);
+    if (state !== 'success') return undefined;
 
-  const raised = Number(campaign.raised || 0);
+    setAmount('');
+    void onChanged?.();
+
+    const timer = setTimeout(() => {
+      void onChanged?.();
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [state, onChanged]);
+
+  const raisedValue = Number(campaign.raised ?? campaign.amountCollected ?? 0);
+  const raised = Number.isFinite(raisedValue) ? raisedValue : 0;
   const target = Number(campaign.target);
-  const percent = Math.min(100, Math.round((raised / target) * 100));
-  const ended = campaign.deadlineMs <= Date.now();
-  const daysLeft = Math.max(0, Math.ceil((campaign.deadlineMs - Date.now()) / 86400000));
-  const reached = raised >= target;
+  const hasValidTarget = Number.isFinite(target) && target > 0;
+  const percent = hasValidTarget ? Math.min(100, Math.round((raised / target) * 100)) : 0;
+  const deadlineMs = Number(campaign.deadlineMs);
+  const ended = Number.isFinite(deadlineMs) && deadlineMs <= Date.now();
+  const daysLeft = Number.isFinite(deadlineMs)
+    ? Math.max(0, Math.ceil((deadlineMs - Date.now()) / 86400000))
+    : 0;
+  const reached = hasValidTarget && raised >= target;
+  const canDonate = hasValidTarget && !reached && !ended && !campaign.withdrawn;
+  const status = getCampaignStatus(campaign, reached, ended);
+  const badgeStyle = getBadgeStyle(campaign, reached, ended);
 
-  let status = 'Đang gây quỹ';
-  let badgeStyle = { backgroundColor: '#e3f2fd', color: '#007bff' };
-
-  if (campaign.withdrawn) {
-    status = 'Đã giải ngân';
-    badgeStyle = { backgroundColor: '#f5f5f5', color: '#595959' };
-  } else if (reached) {
-    status = 'Đã đạt mục tiêu';
-    badgeStyle = { backgroundColor: '#e8f5e9', color: '#2e7d32' };
-  } else if (ended) {
-    status = 'Đã kết thúc';
-    badgeStyle = { backgroundColor: '#ffebee', color: '#c62828' };
-  }
-
-  const canDonate = !ended && !campaign.withdrawn;
-
-  const handleDonate = async (e) => {
-    e.preventDefault();
+  const handleDonate = async (event) => {
+    event.preventDefault();
     setFormError('');
 
     if (!canDonate) {
@@ -56,17 +102,28 @@ export default function CampaignCard({ campaign, onChanged }) {
     }
 
     const numericAmount = Number(amount);
-    if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
+    if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
       setFormError('Vui lòng nhập số ETH hợp lệ (lớn hơn 0).');
       return;
     }
 
+    reset();
     await donate(campaign.id, numericAmount.toString());
-    setTimeout(() => onChanged?.(), 3000); // đợi 3 giây cho RPC công khai kịp cập nhật
   };
 
+  const transactionMessage = getTransactionMessage(state, message);
+  const transactionColor = getTransactionColor(state);
+
   return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '10px', padding: '16px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+    <div style={{
+      backgroundColor: '#fff',
+      borderRadius: '10px',
+      padding: '16px',
+      boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'space-between',
+    }}>
       <div>
         <img
           src={campaign.imageURI || 'https://via.placeholder.com/600x400?text=Tu+Thien+Minh+Bach'}
@@ -110,19 +167,28 @@ export default function CampaignCard({ campaign, onChanged }) {
             <div style={{ display: 'flex', gap: '8px' }}>
               <input
                 type="number"
+                min="0"
                 step="any"
                 placeholder="Số ETH (VD: 0.01)"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                disabled={locked}
+                onChange={(event) => setAmount(event.target.value)}
+                disabled={isBusy}
                 style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
               />
               <button
                 type="submit"
-                disabled={locked}
-                style={{ padding: '8px 14px', backgroundColor: locked ? '#ccc' : '#ff9800', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: locked ? 'not-allowed' : 'pointer' }}
+                disabled={isBusy}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: isBusy ? '#ccc' : '#ff9800',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 'bold',
+                  cursor: isBusy ? 'not-allowed' : 'pointer',
+                }}
               >
-                {isBusy ? 'Đang gửi...' : 'Quyên góp'}
+                {getDonateButtonLabel(state, isBusy)}
               </button>
             </div>
 
@@ -134,22 +200,22 @@ export default function CampaignCard({ campaign, onChanged }) {
           </form>
         ) : (
           <div style={{ padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '6px', textAlign: 'center', color: '#666', fontSize: '13px', marginBottom: '10px' }}>
-            {campaign.withdrawn ? 'Chiến dịch đã giải ngân, ngừng nhận quyên góp.' : 'Chiến dịch đã kết thúc thời hạn gây quỹ.'}
+            {getUnavailableMessage(campaign, reached, ended)}
           </div>
         )}
 
-        {message && (
-          <div style={{ fontSize: '12px', color: state === 'error' ? '#ff4d4f' : '#2e7d32', marginBottom: '8px' }}>
-            {message}{' '}
+        {transactionMessage && (
+          <div style={{ fontSize: '12px', color: transactionColor, marginBottom: '8px' }}>
+            {transactionMessage}{' '}
             {explorerUrl && (
-              <a href={explorerUrl} target="_blank" rel="noreferrer" style={{ color: '#007bff', textDecoration: 'underline' }}>
+              <a href={explorerUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#007bff', textDecoration: 'underline' }}>
                 Xem trên Etherscan
               </a>
             )}
           </div>
         )}
 
-        <WithdrawRefundButtons campaign={campaign} onChanged={onChanged} />
+        <WithdrawRefundButtons campaign={campaign} />
       </div>
     </div>
   );
