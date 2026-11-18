@@ -7,6 +7,7 @@ import ShortAddress from '../components/ShortAddress';
 import DonateForm from '../components/DonateForm'; // Form nhập ETH đã tạo ở Giai đoạn 3
 import WithdrawRefundButtons from '../components/WithdrawRefundButtons'; // Nút Rút/Hoàn vừa tạo ở Giai đoạn 5
 import { useCampaigns } from '../web3/hooks/useCampaigns'; 
+import DonationHistory from '../components/DonationHistory';
 
 export default function CampaignDetail() {
   // Lấy ID chiến dịch từ đường dẫn URL
@@ -75,7 +76,7 @@ export default function CampaignDetail() {
       {/* Chỗ trống cho Bảng lịch sử quyên góp sau này */}
       <div style={{ marginTop: '40px' }}>
         <h3>Lịch sử quyên góp</h3>
-        <p style={{ color: '#888', fontStyle: 'italic' }}>Đang cập nhật dữ liệu...</p>
+        <DonationHistory campaignId={campaign.id} />
       </div>
     </div>
   );
