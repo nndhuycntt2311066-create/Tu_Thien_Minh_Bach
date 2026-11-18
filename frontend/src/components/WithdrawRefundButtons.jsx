@@ -20,7 +20,7 @@ export default function WithdrawRefundButtons({ campaign }) {
   // Điều kiện Rút tiền: Chủ chiến dịch + Đạt mục tiêu + Chưa rút
   const canWithdraw = isOwner && isTargetMet && !isWithdrawn;
   
-  // Điều kiện Hoàn tiền: Đã hết hạn + Chưa đạt mục tiêu[cite: 2]
+  // Điều kiện Hoàn tiền: Đã hết hạn + Chưa đạt mục tiêu
   // (Thực tế contract sẽ check thêm người dùng có góp hay không)
   const canRefund = isExpired && !isTargetMet;
 
@@ -46,7 +46,7 @@ export default function WithdrawRefundButtons({ campaign }) {
 
       {canRefund && (
         <div>
-          <p style={{ margin: '0 0 10px 0', fontSize: '14px' }}>Chiến dịch đã hết hạn nhưng chưa đạt mục tiêu nên bạn có thể xin hoàn tiền[cite: 2].</p>
+          <p style={{ margin: '0 0 10px 0', fontSize: '14px' }}>Chiến dịch đã hết hạn nhưng chưa đạt mục tiêu nên bạn có thể xin hoàn tiền.</p>
           <button 
             onClick={() => refund(campaign.id)} 
             disabled={isRefunding || rState === 'confirming'}

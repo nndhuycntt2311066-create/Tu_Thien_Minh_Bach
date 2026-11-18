@@ -76,13 +76,9 @@ export default function CampaignCard({ campaign }) {
       
       <div style={{ margin: '16px 0', fontSize: '14px' }}>
         <p style={{ margin: '4px 0' }}><strong>Mục tiêu:</strong> {campaign.target} ETH</p>
-<<<<<<< Updated upstream
-        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.raised || 0} ETH</p>
-=======
         <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.raised ?? campaign.amountCollected ?? 0} ETH</p>
         <ProgressBar raised={campaign.raised ?? campaign.amountCollected} target={campaign.target} />
         {campaign.deadlineMs != null && <Countdown deadlineMs={campaign.deadlineMs} />}
->>>>>>> Stashed changes
       </div>
 
       {/* Form Quyên góp */}

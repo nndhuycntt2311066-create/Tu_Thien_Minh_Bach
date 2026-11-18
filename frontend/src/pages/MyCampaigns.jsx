@@ -14,7 +14,7 @@ export default function MyCampaigns() {
   if (isLoading) return <p style={{ padding: '20px' }}>Đang tải dữ liệu...</p>;
   if (error) return <p style={{ padding: '20px', color: 'red' }}>Lỗi: {error}</p>;
 
-  // Lọc danh sách chiến dịch do tôi tạo[cite: 2]
+  // Lọc danh sách chiến dịch do tôi tạo
   const myCampaigns = campaigns.filter(c => c.owner?.toLowerCase() === address.toLowerCase());
 
   return (
@@ -30,7 +30,7 @@ export default function MyCampaigns() {
         </div>
       )}
 
-      {/* Phần "Chiến dịch tôi đã góp" sẽ làm sau khi phối hợp lấy hook từ Đông[cite: 2] */}
+      {/* Phần "Chiến dịch tôi đã góp" sẽ làm sau khi phối hợp lấy hook từ Đông */}
       <div style={{ marginTop: '40px' }}>
         <h2>Chiến dịch tôi đã góp</h2>
         <p style={{ color: '#888', fontStyle: 'italic' }}>Đang chờ phối hợp tích hợp dữ liệu...</p>
