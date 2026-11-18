@@ -64,6 +64,7 @@ contract Crowdfunding is ReentrancyGuard {
     function donate(uint256 _id) external payable validCampaign(_id) {
         Campaign storage c = campaigns[_id];
         require(block.timestamp < c.deadline, "Campaign ended");
+        require(!c.withdrawn, "Campaign closed");
         require(msg.value > 0, "Send some ETH");
 
         c.amountRaised += msg.value;
