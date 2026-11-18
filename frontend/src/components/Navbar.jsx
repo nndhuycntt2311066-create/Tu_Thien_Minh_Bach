@@ -5,7 +5,7 @@ import { useWallet } from '../web3/hooks/useWallet';
 
 export default function Navbar() {
   // Lấy hàm connect và thông tin ví từ hook
-  const { connect, account, isConnected } = useWallet();
+  const { connect, address, isConnected } = useWallet();
 
   return (
     <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px', background: '#fff', borderBottom: '1px solid #ccc' }}>
@@ -23,7 +23,7 @@ export default function Navbar() {
           color: 'white' 
         }}
       >
-        {isConnected ? `Đã kết nối: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Kết nối Ví MetaMask'}
+       {isConnected && address ? `Đã kết nối: ${address.slice(0, 6)}...${address.slice(-4)}` : 'Kết nối Ví MetaMask'}
       </button>
     </nav>
   );
