@@ -7,10 +7,12 @@ export function useCampaigns(provider = null) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const reload = useCallback(async () => {
+  // reload(true) = tải lại "âm thầm": cập nhật số liệu nhưng KHÔNG bật isLoading,
+  // để danh sách không bị thay bằng chữ "Đang tải..." (giữ nguyên thông báo giao dịch trên thẻ)
+  const reload = useCallback(async (silent = false) => {
     try {
       setError("");
-      setIsLoading(true);
+      if (silent !== true) setIsLoading(true);
       setCampaigns(await fetchCampaigns(provider));
     } catch (err) {
       setError(err.shortMessage || err.message || "Không tải được danh sách chiến dịch.");

@@ -1,7 +1,7 @@
 import { network } from "hardhat";
 
 // Địa chỉ contract đã deploy trên Sepolia
-const CONTRACT_ADDRESS = "0xbf228c75b8F052f439EE40e1012128049aB4299E";
+const CONTRACT_ADDRESS = "0x61958A66c61566BbEec28feEE3acf933776244f3";
 
 // Kết nối mạng được chọn bằng cờ --network khi chạy lệnh
 const { ethers } = await network.connect();

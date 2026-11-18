@@ -81,6 +81,15 @@ describe("Crowdfunding", function () {
         crowdfunding.connect(donor1).donate(99, { value: 1 })
       ).to.be.revertedWith("Campaign does not exist");
     });
+
+    it("từ chối quyên góp sau khi chủ đã rút tiền", async function () {
+      const { crowdfunding, owner, donor1, donor2 } = await withCampaign();
+      await crowdfunding.connect(donor1).donate(0, { value: ethers.parseEther("1") });
+      await crowdfunding.connect(owner).withdraw(0);
+      await expect(
+        crowdfunding.connect(donor2).donate(0, { value: ethers.parseEther("0.1") })
+      ).to.be.revertedWith("Campaign closed");
+    });
   });
 
   describe("withdraw", function () {

@@ -1,31 +1,59 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom'; 
+import StatusBadge from './StatusBadge';
+import ProgressBar from './ProgressBar';
+import Countdown from './Countdown';
 import { useWallet } from '../web3/hooks/useWallet';
 import { useDonate } from '../web3/hooks/useDonate';
+import StatusMessage from './StatusMessage';
+import WithdrawRefundButtons from './WithdrawRefundButtons'; // Thêm import nút Rút/Hoàn tiền
+
 
 export default function CampaignCard({ campaign }) {
   const [amount, setAmount] = useState('');
+  const [formError, setFormError] = useState('');
 
-  // Lấy tài khoản đang kết nối truyền cho hàm Quyên góp
   const { signer } = useWallet();
-  const { donate, isBusy, message, explorerUrl } = useDonate(signer);
+  const {
+    donate,
+    state: txState,
+    message: txMessage,
+    isBusy,
+    explorerUrl,
+    reset,
+  } = useDonate(signer);
+  
+  const statusMessage = formError || txMessage || {
+    confirming: 'Vui lòng mở MetaMask và xác nhận giao dịch...',
+    pending: 'Giao dịch đã gửi, đang chờ xác nhận...',
+    success: 'Quyên góp thành công! Cảm ơn tấm lòng của bạn.',
+  }[txState] || '';
+
+  useEffect(() => {
+    if (txState === 'success') setAmount('');
+  }, [txState]);
 
   const handleDonate = async () => {
-    if (!campaign?.id) {
-      return alert('Chiến dịch không hợp lệ, vui lòng thử lại sau!');
+    setFormError('');
+
+    if (campaign?.id === undefined || campaign?.id === null) {
+      setFormError('Chiến dịch không hợp lệ, vui lòng thử lại sau!');
+      return;
     }
 
     if (!signer) {
-      return alert('Vui lòng bấm Kết nối ví MetaMask trên thanh điều hướng trước!');
+      setFormError('Vui lòng bấm Kết nối ví MetaMask trên thanh điều hướng trước!');
+      return;
     }
 
     const numericAmount = Number(amount);
     if (!Number.isFinite(numericAmount) || numericAmount <= 0) {
-      return alert('Vui lòng nhập số ETH hợp lệ!');
+      setFormError('Vui lòng nhập số ETH hợp lệ!');
+      return;
     }
 
-    // Gọi hàm quyên góp của B
+    reset();
     await donate(campaign.id, numericAmount.toString());
-    setAmount('');
   };
 
   return (
@@ -38,12 +66,19 @@ export default function CampaignCard({ campaign }) {
         <div style={{ width: '100%', height: '200px', background: '#f5f5f5', borderRadius: '8px', marginBottom: '16px' }} />
       )}
       
-      <h3 style={{ margin: '0 0 8px 0' }}>{campaign.title}</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+        <Link to={`/campaigns/${campaign.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+          <h3 style={{ margin: '0 0 8px 0', cursor: 'pointer' }}>{campaign.title}</h3>
+        </Link>
+        <StatusBadge campaign={campaign} />
+      </div>
       <p style={{ color: '#666', fontSize: '14px', flexGrow: 1 }}>{campaign.description}</p>
       
       <div style={{ margin: '16px 0', fontSize: '14px' }}>
         <p style={{ margin: '4px 0' }}><strong>Mục tiêu:</strong> {campaign.target} ETH</p>
-        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.raised || 0} ETH</p>
+        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.raised ?? campaign.amountCollected ?? 0} ETH</p>
+        <ProgressBar raised={campaign.raised ?? campaign.amountCollected} target={campaign.target} />
+        {campaign.deadlineMs != null && <Countdown deadlineMs={campaign.deadlineMs} />}
       </div>
 
       {/* Form Quyên góp */}
@@ -55,33 +90,32 @@ export default function CampaignCard({ campaign }) {
           placeholder="Nhập số ETH (VD: 0.1)" 
           value={amount} 
           onChange={(e) => setAmount(e.target.value)}
+          disabled={isBusy || txState === 'confirming'}
           style={{ padding: '10px', borderRadius: '6px', border: '1px solid #ccc' }}
         />
         <button 
           onClick={handleDonate} 
-          disabled={isBusy}
+          disabled={isBusy || txState === 'confirming'}
           style={{ 
             padding: '10px', borderRadius: '6px', border: 'none', fontWeight: 'bold',
-            background: isBusy ? '#cccccc' : '#ff9800', 
+            background: (isBusy || txState === 'confirming') ? '#cccccc' : '#ff9800', 
             color: 'white', 
-            cursor: isBusy ? 'not-allowed' : 'pointer' 
+            cursor: (isBusy || txState === 'confirming') ? 'not-allowed' : 'pointer' 
           }}
         >
-          {isBusy ? 'Đang xác nhận...' : 'Quyên góp ngay'}
+          {txState === 'pending' ? 'Đang xử lý...' : isBusy ? 'Đang xác nhận...' : 'Quyên góp ngay'}
         </button>
 
-        {/* Thông báo trạng thái và Link */}
-        {message && (
-          <small style={{ color: message.toLowerCase().includes('lỗi') ? 'red' : 'green', marginTop: '4px' }}>
-            {message}
-          </small>
-        )}
-        {explorerUrl && (
-          <a href={explorerUrl} target="_blank" rel="noreferrer" style={{ fontSize: '12px', color: '#2196F3', marginTop: '4px' }}>
-            Xem giao dịch trên Etherscan
-          </a>
-        )}
+        <StatusMessage 
+          state={formError ? 'error' : txState}
+          message={statusMessage}
+          explorerUrl={explorerUrl} 
+        />
       </div>
+
+      {/* Đã nhúng cụm nút Rút / Hoàn tiền vào cuối thẻ */}
+      <WithdrawRefundButtons campaign={campaign} />
+      
     </div>
   );
 }
