@@ -32,7 +32,25 @@ export function useWalletState() {
 
   // MetaMask không có lệnh "ngắt kết nối" thật; ta chỉ xóa trạng thái trong app
   const disconnect = useCallback(() => setWallet(null), []);
+  // Tự kết nối lại khi tải trang, NẾU người dùng đã cấp quyền trước đó
+  // (eth_accounts KHÔNG bật popup, khác với eth_requestAccounts)
+  useEffect(() => {
+    if (!hasMetaMask()) return;
+    let cancelled = false;
 
+    window.ethereum
+      .request({ method: "eth_accounts" })
+      .then((accounts) => {
+        if (!cancelled && accounts.length > 0) connect();
+      })
+      .catch(() => {
+        // Không làm gì: người dùng sẽ bấm nút Kết nối thủ công
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [connect]);
   // Lắng nghe đổi tài khoản / đổi mạng
   useEffect(() => {
     if (!hasMetaMask()) return;
