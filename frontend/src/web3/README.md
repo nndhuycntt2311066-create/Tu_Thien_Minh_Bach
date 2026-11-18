@@ -5,8 +5,8 @@ Thư mục này chứa toàn bộ phần kết nối blockchain (Sepolia) cho gi
 ## Thông tin contract (nguồn duy nhất: `src/contracts/config.js`)
 
 - Mạng: Sepolia (chainId 11155111)
-- Địa chỉ contract: `0xbf228c75b8F052f439EE40e1012128049aB4299E`
-- Xem công khai trên Etherscan: https://sepolia.etherscan.io/address/0xbf228c75b8F052f439EE40e1012128049aB4299E
+- Địa chỉ contract: `0x61958A66c61566BbEec28feEE3acf933776244f3`
+- Xem công khai trên Etherscan: https://sepolia.etherscan.io/address/0x61958A66c61566BbEec28feEE3acf933776244f3
 - Số tiền trong hook luôn tính bằng **ETH (chuỗi)**, hook tự đổi sang/từ wei.
 
 ## 1. useWallet
