@@ -8,13 +8,14 @@ export default function CampaignCard({ campaign, onChanged }) {
   const { signer, address } = useWallet();
   const { donate, isBusy, message, explorerUrl, state } = useDonate(signer);
 
+  const locked = isBusy || state === 'confirming' || state === 'success';
+
   const [amount, setAmount] = useState('');
   const [formError, setFormError] = useState('');
 
   useEffect(() => {
     if (state === 'success') {
       setAmount('');
-      onChanged?.();
     }
   }, [state]);
 
@@ -53,12 +54,15 @@ export default function CampaignCard({ campaign, onChanged }) {
       setFormError('Vui lòng kết nối ví MetaMask trước khi quyên góp.');
       return;
     }
-    if (!amount || isNaN(amount) || Number(amount) <= 0) {
+
+    const numericAmount = Number(amount);
+    if (!amount || isNaN(numericAmount) || numericAmount <= 0) {
       setFormError('Vui lòng nhập số ETH hợp lệ (lớn hơn 0).');
       return;
     }
 
-    await donate(campaign.id, amount);
+    await donate(campaign.id, numericAmount.toString());
+    setTimeout(() => onChanged?.(), 3000); // đợi 3 giây cho RPC công khai kịp cập nhật
   };
 
   return (
@@ -110,13 +114,13 @@ export default function CampaignCard({ campaign, onChanged }) {
                 placeholder="Số ETH (VD: 0.01)"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                disabled={isBusy}
+                disabled={locked}
                 style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
               />
               <button
                 type="submit"
-                disabled={isBusy}
-                style={{ padding: '8px 14px', backgroundColor: '#ff9800', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: isBusy ? 'not-allowed' : 'pointer' }}
+                disabled={locked}
+                style={{ padding: '8px 14px', backgroundColor: locked ? '#ccc' : '#ff9800', color: '#fff', border: 'none', borderRadius: '6px', fontWeight: 'bold', cursor: locked ? 'not-allowed' : 'pointer' }}
               >
                 {isBusy ? 'Đang gửi...' : 'Quyên góp'}
               </button>
@@ -145,7 +149,7 @@ export default function CampaignCard({ campaign, onChanged }) {
           </div>
         )}
 
-        <WithdrawRefundButtons campaign={campaign} />
+        <WithdrawRefundButtons campaign={campaign} onChanged={onChanged} />
       </div>
     </div>
   );

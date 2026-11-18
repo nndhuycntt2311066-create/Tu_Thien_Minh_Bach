@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useWallet } from '../web3/hooks/useWallet';
 import { useDonate } from '../web3/hooks/useDonate';
 import { fetchCampaignById } from '../web3/campaigns';
-import CampaignActions from '../components/CampaignActions';
+import WithdrawRefundButtons from '../components/WithdrawRefundButtons';
 
 export default function CampaignDetail() {
   const { id } = useParams();
@@ -162,7 +162,7 @@ export default function CampaignDetail() {
           </div>
         )}
 
-        <CampaignActions campaign={campaign} onChanged={loadDetail} />
+        <WithdrawRefundButtons campaign={campaign} onChanged={loadDetail} />
       </div>
     </div>
   );
