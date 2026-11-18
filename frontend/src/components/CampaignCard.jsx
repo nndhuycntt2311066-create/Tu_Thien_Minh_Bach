@@ -10,7 +10,7 @@ export default function CampaignCard({ campaign }) {
   const { donate, isBusy, message, explorerUrl } = useDonate(signer);
 
   const handleDonate = async () => {
-if (campaign?.id === undefined || campaign?.id === null) {
+    if (!campaign?.id) {
       return alert('Chiến dịch không hợp lệ, vui lòng thử lại sau!');
     }
 
@@ -43,7 +43,7 @@ if (campaign?.id === undefined || campaign?.id === null) {
       
       <div style={{ margin: '16px 0', fontSize: '14px' }}>
         <p style={{ margin: '4px 0' }}><strong>Mục tiêu:</strong> {campaign.target} ETH</p>
-        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.amountCollected || 0} ETH</p>
+        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.raised || 0} ETH</p>
       </div>
 
       {/* Form Quyên góp */}
