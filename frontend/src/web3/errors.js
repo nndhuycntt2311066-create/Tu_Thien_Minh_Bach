@@ -25,6 +25,8 @@ export function translateError(err) {
     return "Chiến dịch này đã được rút tiền rồi.";
   if (text.includes("campaign ended"))
     return "Chiến dịch đã hết hạn, không thể góp thêm.";
+  if (text.includes("campaign closed"))
+    return "Chiến dịch đã đóng vì chủ chiến dịch đã rút tiền, không thể góp thêm.";
   if (text.includes("send some eth"))
     return "Vui lòng nhập số ETH lớn hơn 0.";
   if (text.includes("campaign does not exist"))

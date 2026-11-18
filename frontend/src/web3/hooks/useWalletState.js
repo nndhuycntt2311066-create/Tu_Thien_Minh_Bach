@@ -1,10 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { connectWallet, hasMetaMask } from "../wallet";
 
 export function useWalletState() {
   const [wallet, setWallet] = useState(null);      // { provider, signer, address, balance }
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState("");
+
+  // Giữ giá trị wallet MỚI NHẤT để các listener bên dưới đọc được
+  // (listener chỉ đăng ký một lần nên không thấy state mới nếu đọc trực tiếp)
+  const walletRef = useRef(null);
+  useEffect(() => {
+    walletRef.current = wallet;
+  }, [wallet]);
 
   const connect = useCallback(async () => {
     try {
@@ -31,10 +38,12 @@ export function useWalletState() {
     if (!hasMetaMask()) return;
 
     const onAccountsChanged = (accounts) => {
-      if (accounts.length === 0) setWallet(null); // người dùng ngắt ví trong MetaMask
-      else connect();                              // đổi tài khoản -> cập nhật lại
+      if (accounts.length === 0) setWallet(null);  // người dùng ngắt ví trong MetaMask
+      else if (walletRef.current) connect();       // chỉ cập nhật lại khi ĐANG kết nối (tránh popup ngoài ý muốn)
     };
-    const onChainChanged = () => connect();        // đổi mạng -> kiểm tra lại
+    const onChainChanged = () => {
+      if (walletRef.current) connect();            // chỉ kiểm tra lại mạng khi ĐANG kết nối
+    };
 
     window.ethereum.on("accountsChanged", onAccountsChanged);
     window.ethereum.on("chainChanged", onChainChanged);
