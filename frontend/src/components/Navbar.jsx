@@ -25,6 +25,7 @@ export default function Navbar() {
       <div style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
         <Link to="/campaigns" style={getLinkStyle('/campaigns')}>Trang chủ</Link>
         <Link to="/create" style={getLinkStyle('/create')}>+ Tạo chiến dịch</Link>
+        <Link to="/my-campaigns" style={getLinkStyle('/my-campaigns')}>Quản lý quỹ</Link>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>

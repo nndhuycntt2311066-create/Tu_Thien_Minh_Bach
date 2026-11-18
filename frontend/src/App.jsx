@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import CampaignCard from './components/CampaignCard';
 import CampaignDetail from './pages/CampaignDetail';
 import CreateCampaign from './components/CreateCampaign';
+import MyCampaigns from './pages/MyCampaigns';
 import { useCampaigns } from './web3/hooks/useCampaigns';
 
 const Campaigns = () => {
@@ -51,6 +52,7 @@ function App() {
             <Route path="/campaigns" element={<Campaigns />} />
             <Route path="/campaigns/:id" element={<CampaignDetail />} />
             <Route path="/create" element={<CreateCampaign />} />
+            <Route path="/my-campaigns" element={<MyCampaigns />} />
           </Routes>
         </div>
       </div>
