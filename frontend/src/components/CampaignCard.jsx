@@ -10,7 +10,7 @@ export default function CampaignCard({ campaign }) {
   const { donate, isBusy, message, explorerUrl } = useDonate(signer);
 
   const handleDonate = async () => {
-    if (!campaign?.id) {
+if (campaign?.id === undefined || campaign?.id === null) {
       return alert('Chiến dịch không hợp lệ, vui lòng thử lại sau!');
     }
 
