@@ -4,6 +4,7 @@ import { useWallet } from '../web3/hooks/useWallet';
 import { useDonate } from '../web3/hooks/useDonate';
 import { fetchCampaignById } from '../web3/campaigns';
 import WithdrawRefundButtons from '../components/WithdrawRefundButtons';
+import DonationHistory from '../components/DonationHistory';
 
 export default function CampaignDetail() {
   const { id } = useParams();
@@ -165,6 +166,9 @@ export default function CampaignDetail() {
         )}
 
         <WithdrawRefundButtons campaign={campaign} onChanged={loadDetail} />
+
+        <h4 style={{ margin: '24px 0 8px' }}>Lịch sử quyên góp</h4>
+        <DonationHistory campaignId={campaign.id} />
       </div>
     </div>
   );
