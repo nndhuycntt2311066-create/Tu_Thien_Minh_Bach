@@ -43,7 +43,7 @@ export default function CampaignCard({ campaign }) {
       
       <div style={{ margin: '16px 0', fontSize: '14px' }}>
         <p style={{ margin: '4px 0' }}><strong>Mục tiêu:</strong> {campaign.target} ETH</p>
-        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.amountCollected || 0} ETH</p>
+        <p style={{ margin: '4px 0' }}><strong>Đã gom:</strong> {campaign.raised || 0} ETH</p>
       </div>
 
       {/* Form Quyên góp */}
