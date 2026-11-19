@@ -5,6 +5,7 @@ import { useDonate } from '../web3/hooks/useDonate';
 import { fetchCampaignById } from '../web3/campaigns';
 import WithdrawRefundButtons from '../components/WithdrawRefundButtons';
 import DonationHistory from '../components/DonationHistory';
+import CampaignImage from '../components/CampaignImage';
 
 export default function CampaignDetail() {
   const { id } = useParams();
@@ -86,8 +87,8 @@ export default function CampaignDetail() {
         ← Quay lại danh sách
       </Link>
 
-      <img
-        src={campaign.imageURI || 'https://via.placeholder.com/800x400?text=Tu+Thien+Minh+Bach'}
+      <CampaignImage
+        src={campaign.imageURI}
         alt={campaign.title}
         style={{ width: '100%', maxHeight: '360px', objectFit: 'cover', borderRadius: '8px', marginBottom: '20px' }}
       />
