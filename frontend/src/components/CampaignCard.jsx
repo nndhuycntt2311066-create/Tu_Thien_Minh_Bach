@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useWallet } from '../web3/hooks/useWallet';
 import { useDonate } from '../web3/hooks/useDonate';
 import WithdrawRefundButtons from './WithdrawRefundButtons';
+import CampaignImage from './CampaignImage';
 
 function getUnavailableMessage(campaign, reached, ended) {
   if (campaign.withdrawn) return 'Chiến dịch đã giải ngân, ngừng nhận quyên góp.';
@@ -125,8 +126,8 @@ export default function CampaignCard({ campaign, onChanged }) {
       justifyContent: 'space-between',
     }}>
       <div>
-        <img
-          src={campaign.imageURI || 'https://via.placeholder.com/600x400?text=Tu+Thien+Minh+Bach'}
+          <CampaignImage
+          src={campaign.imageURI}
           alt={campaign.title}
           style={{ width: '100%', height: '180px', objectFit: 'cover', borderRadius: '8px', marginBottom: '12px' }}
         />
